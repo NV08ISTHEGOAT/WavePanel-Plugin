@@ -81,5 +81,12 @@ lines, exactly as the console shows them (on most servers that includes the IP a
 
 ## License
 
-Copyright (c) 2026 NV08, all rights reserved. The code is public so you can read it, build it and check the official
-jar - it is not licensed for copying or reuse in other projects. See [LICENSE](LICENSE).
+Copyright (c) 2026 NV08. Licensed under
+[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/):
+
+- **Share** - you may copy and pass it on, unchanged, in any medium or format;
+- **Attribution** - credit NV08 and link to the license;
+- **NonCommercial** - not for commercial purposes;
+- **NoDerivatives** - you may not share modified versions of it.
+
+Full legal text in [LICENSE](LICENSE).
