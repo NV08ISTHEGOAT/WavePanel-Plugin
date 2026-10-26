@@ -1,0 +1,4 @@
+# LF line endings everywhere, Windows too: plugin.yml, fabric.mod.json and the other descriptor files are copied into
+# the jar byte for byte, so a CRLF checkout would make them differ from the official jar
+* text=auto eol=lf
+*.jar binary
