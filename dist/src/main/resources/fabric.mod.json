@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "wavepanel",
+  "version": "${project.version}",
+  "name": "WavePanel",
+  "description": "Connects this server to WavePanel (wavepanel.xyz) - live stats, console, players, files and backups. Server-side only: /wavepanel connect <code>",
+  "authors": ["NV08"],
+  "contact": {
+    "homepage": "https://wavepanel.xyz"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "server",
+  "entrypoints": {
+    "server": ["me.nv08.wavepanel.mod.FabricEntry"]
+  },
+  "depends": {
+    "fabricloader": ">=0.12.0"
+  }
+}

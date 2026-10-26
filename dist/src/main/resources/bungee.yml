@@ -1,0 +1,5 @@
+name: WavePanel
+version: '${project.version}'
+main: me.nv08.wavepanel.bungee.WavePanelBungee
+author: NV08
+description: Connects this proxy to WavePanel (wavepanel.xyz) - live players, console, files and plugins. /wavepanel connect <code>

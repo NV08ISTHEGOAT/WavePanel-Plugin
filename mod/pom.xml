@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.nv08.wavepanel</groupId>
+        <artifactId>wavepanel-parent</artifactId>
+        <version>3.2</version>
+    </parent>
+    <artifactId>wavepanel-mod</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-stubs</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Minecraft's command library (inside every server since 1.13) - its API hasn't changed since -->
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>brigadier</artifactId>
+            <version>1.3.10</version>
+            <scope>system</scope>
+            <systemPath>${libs}/brigadier-1.3.10.jar</systemPath>
+        </dependency>
+    </dependencies>
+</project>

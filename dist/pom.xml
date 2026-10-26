@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.nv08.wavepanel</groupId>
+        <artifactId>wavepanel-parent</artifactId>
+        <version>3.2</version>
+    </parent>
+    <!-- The one WavePanel.jar: every module, plus each server kind's own descriptor (plugin.yml, fabric.mod.json...). -->
+    <artifactId>wavepanel-dist</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-bukkit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-bungee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-velocity</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-mod</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-agent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!-- its own file: shading over the module's jar would keep stale classes from the last build -->
+                            <outputFile>${project.build.directory}/WavePanel.jar</outputFile>
+                            <artifactSet>
+                                <includes>
+                                    <include>me.nv08.wavepanel:*</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>me.nv08.wavepanel:wavepanel-stubs</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/maven/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>me.nv08.wavepanel.agent.Agent</Premain-Class>
+                                        <Agent-Class>me.nv08.wavepanel.agent.Agent</Agent-Class>
+                                        <Implementation-Title>WavePanel</Implementation-Title>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
+                                        <!-- Paper: nothing in here uses obfuscated server names - don't remap this jar -->
+                                        <paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

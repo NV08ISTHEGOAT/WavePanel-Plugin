@@ -1,0 +1,11 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="All rights reserved"
+
+[[mods]]
+modId="wavepanel"
+version="${project.version}"
+displayName="WavePanel"
+authors="NV08"
+displayURL="https://wavepanel.xyz"
+description='''Connects this server to WavePanel (wavepanel.xyz) - live stats, console, players, files and backups. Server-side only: /wavepanel connect <code>'''

@@ -1,0 +1,4 @@
+# build output
+target/
+# the jars it compiles against: java tools/FetchLibs.java downloads them (libs/README.md)
+libs/*.jar

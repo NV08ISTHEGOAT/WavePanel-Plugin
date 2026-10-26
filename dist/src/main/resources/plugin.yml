@@ -1,0 +1,21 @@
+name: WavePanel
+version: '${project.version}'
+main: me.nv08.wavepanel.bukkit.WavePanelBukkit
+api-version: '1.13'
+folia-supported: true
+description: Connects this server to WavePanel (wavepanel.xyz) - live stats, console, players, files and backups. /wavepanel connect <code>
+authors: [NV08]
+website: https://wavepanel.xyz
+# an old PanelLink.jar (the name before 3.0) enables first, so WavePanel can take over its settings and switch it off
+softdepend: [PanelLink]
+
+commands:
+  wavepanel:
+    description: Connect this server to WavePanel (connect <code> / status / disconnect)
+    usage: /wavepanel [connect <code>|status|disconnect]
+    permission: wavepanel.admin
+
+permissions:
+  wavepanel.admin:
+    description: Connect / disconnect this server from WavePanel
+    default: op

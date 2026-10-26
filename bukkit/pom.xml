@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.nv08.wavepanel</groupId>
+        <artifactId>wavepanel-parent</artifactId>
+        <version>3.2</version>
+    </parent>
+    <artifactId>wavepanel-bukkit</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- an old API on purpose: what compiles here runs on 1.8 to 26.x (newer calls go through reflection) -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

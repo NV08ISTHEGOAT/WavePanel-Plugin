@@ -1,0 +1,1 @@
+{"id":"wavepanel","name":"WavePanel","version":"${project.version}","description":"Connects this proxy to WavePanel (wavepanel.xyz) - live players, console, files and plugins. /wavepanel connect <code>","url":"https://wavepanel.xyz","authors":["NV08"],"dependencies":[],"main":"me.nv08.wavepanel.velocity.WavePanelVelocity"}

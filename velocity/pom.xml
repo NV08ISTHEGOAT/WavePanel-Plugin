@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.nv08.wavepanel</groupId>
+        <artifactId>wavepanel-parent</artifactId>
+        <version>3.2</version>
+    </parent>
+    <artifactId>wavepanel-velocity</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>me.nv08.wavepanel</groupId>
+            <artifactId>wavepanel-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- the proxy itself (API, Adventure, SLF4J, Guice inside); 3.x and 4.x share this API -->
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-proxy</artifactId>
+            <version>local</version>
+            <scope>system</scope>
+            <systemPath>${libs}/velocity.jar</systemPath>
+        </dependency>
+    </dependencies>
+</project>
