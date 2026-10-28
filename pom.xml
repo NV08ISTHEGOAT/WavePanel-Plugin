@@ -15,7 +15,7 @@
     -->
     <groupId>me.nv08.wavepanel</groupId>
     <artifactId>wavepanel-parent</artifactId>
-    <version>3.2</version>
+    <version>3.3</version>
     <packaging>pom</packaging>
 
     <modules>

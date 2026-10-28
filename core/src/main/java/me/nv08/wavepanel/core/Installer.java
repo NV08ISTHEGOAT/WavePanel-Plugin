@@ -218,7 +218,7 @@ final class Installer {
                 File bin = new File(System.getProperty("java.home"), "bin");
                 File exe = new File(bin, "java.exe").isFile() ? new File(bin, "java.exe") : new File(bin, "java");
                 say("The server jar is still locked (" + locked.getClass().getSimpleName() + ") - a helper swaps it right after this exits.");
-                new ProcessBuilder(exe.getPath(), "-cp", wpJar.getPath(), InstallFinisher.class.getName(),
+                new ProcessBuilder(exe.getPath(), "-cp", wpJar.getPath(), InstallFinisher.NAME,
                         p.newJar.getPath(), p.serverJar.getPath(), p.stage.getPath())
                         .directory(p.root).redirectErrorStream(true)
                         .redirectOutput(ProcessBuilder.Redirect.appendTo(new File(p.root, LOG))).start();

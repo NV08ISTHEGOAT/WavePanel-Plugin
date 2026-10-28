@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +30,7 @@ import static me.nv08.wavepanel.core.Texts.*;
  * the first copy only.
  */
 public final class Core {
-    public static final String VERSION = "3.2";
+    public static final String VERSION = "3.3";
     static final String DEFAULT_PANEL = "https://wavepanel.xyz";
     private static final Pattern SHORT_CODE = Pattern.compile("^WP-?([2-9A-HJ-NP-Z]{4})-?([2-9A-HJ-NP-Z]{4})$");
     private static final Pattern FIELD = Pattern.compile("\"(\\w)\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
@@ -150,6 +151,8 @@ public final class Core {
         j.append(",\"files\":").append(filesOn);
         j.append(",\"java\":").append(Installer.javaMajor());
         j.append(",\"installer\":").append(filesOn);              // 3.2+: WavePanel can swap this server's software
+        j.append(",\"splitter\":").append(filesOn && !p.isProxy()); // 3.3+: ... and split it
+        if (Split.part() != null) j.append(",\"splitPart\":").append(Json.str(Split.part()));
         if (s != null) {
             j.append(",\"version\":").append(Json.str(s.software != null ? s.software : p.displayName()));
             if (s.tps != null && s.tps.length >= 3) {
@@ -300,7 +303,7 @@ public final class Core {
 
     /** Restart pressed in WavePanel: save, stop - and exit with remote.restart-exit-code so the host starts it again. */
     void restartFromPanel() {
-        final int code = cfg.integer("remote.restart-exit-code", 1);
+        final int code = restartCode();
         log.info("Restart from WavePanel: saving and stopping" + (code != 0
                 ? " - exit code " + code + " tells the host to start the server again (its auto-restart / crash detection)." : "."));
         p.runSync(() -> p.restart(code));
@@ -311,14 +314,23 @@ public final class Core {
      * (Installer.apply in a shutdown hook), which then ends the JVM with the restart code - the host starts the new jar.
      */
     void installAndRestart(final Installer.Plan plan) {
-        final int code = cfg.integer("remote.restart-exit-code", 1);
+        swapAndRestart("Installing " + plan.label + (plan.wipe ? " (wiping the server files)" : ""), "on the new software",
+                code -> Installer.apply(plan, code));
+    }
+
+    /**
+     * The same for anything that swaps the server's files once it has stopped (an install, a split): {@code apply}
+     * runs in a shutdown hook and ends the JVM itself with the exit code it's given.
+     */
+    void swapAndRestart(final String what, final String how, final IntConsumer apply) {
+        final int code = restartCode();
         synchronized (Core.class) {
             installing = true;
             haltHook = true;                                     // the install hook ends the JVM itself
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Installer.apply(plan, code), "WavePanel-install"));
-        log.info("Installing " + plan.label + (plan.wipe ? " (wiping the server files)" : "") + ": stopping the server now - "
-                + (code != 0 ? "it comes back on the new software by itself (exit code " + code + ")." : "start it again in your host's panel."));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> apply.accept(code), "WavePanel-install"));
+        log.info(what + ": stopping the server now - "
+                + (code != 0 ? "it comes back " + how + " by itself (exit code " + code + ")." : "start it again in your host's panel."));
         Thread t = new Thread(() -> {
             try {
                 Thread.sleep(1500);                              // WavePanel gets its answer first
@@ -331,8 +343,17 @@ public final class Core {
         t.start();
     }
 
-    /** An install is waiting for the server to stop: no restart scripts (they'd start the old jar right away). */
-    public static boolean installing() { return installing; }
+    /** The exit code that has the server started again - never 0 in a split (host mode keeps a part that exits 0 off). */
+    int restartCode() {
+        int code = cfg.integer("remote.restart-exit-code", 1);
+        return code == 0 && Split.part() != null ? 1 : code;
+    }
+
+    /**
+     * No restart scripts now: an install is waiting for the server to stop (a script would start the old jar right
+     * away), or this server is one part of a split (WavePanel's host mode starts it again itself).
+     */
+    public static boolean installing() { return installing || Split.part() != null; }
 
     /**
      * After a stop from WavePanel, end the JVM with this exit code once the server has saved (its own shutdown hooks

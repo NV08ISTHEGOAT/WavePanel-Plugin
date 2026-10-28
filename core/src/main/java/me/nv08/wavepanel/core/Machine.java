@@ -23,6 +23,7 @@ final class Machine {
     private long lastCpuTime = -1, lastCpuWall;
     private long[] statTotal, statIdle;
     private final String cpuModel = readCpuModel();
+    private final long memLimit = readMemLimit();
 
     private static Method osMethod(String... names) {
         try {
@@ -57,6 +58,7 @@ final class Machine {
             if (pcpu != null && pcpu >= 0) j.append(",\"cpu\":").append(Json.num(pcpu * rt.availableProcessors() * 100));
         }
         j.append(",\"mem\":").append(rt.totalMemory());
+        if (memLimit > 0) j.append(",\"memLimit\":").append(memLimit);
         j.append(",\"threads\":").append(ManagementFactory.getThreadMXBean().getThreadCount());
         j.append(",\"jvmUptime\":").append(ManagementFactory.getRuntimeMXBean().getUptime());
 
@@ -117,6 +119,33 @@ final class Machine {
         statTotal = tot;
         statIdle = idl;
         return out;
+    }
+
+    /**
+     * The memory this server may use in all (its container / systemd unit: the cgroup limit), in bytes - what a Split
+     * shares out. 0 when there's no limit (then the machine's RAM is it) or it's not Linux.
+     */
+    private static long readMemLimit() {
+        List<String> files = new ArrayList<>();
+        try {
+            for (String line : java.nio.file.Files.readAllLines(new File("/proc/self/cgroup").toPath())) {
+                if (line.startsWith("0::")) files.add("/sys/fs/cgroup" + line.substring(3).trim() + "/memory.max");      // cgroup v2
+            }
+        } catch (Exception ignored) {
+            // not Linux
+        }
+        files.add("/sys/fs/cgroup/memory.max");                                    // v2, inside a container
+        files.add("/sys/fs/cgroup/memory/memory.limit_in_bytes");                  // v1
+        for (String f : files) {
+            try {
+                String v = new String(java.nio.file.Files.readAllBytes(new File(f).toPath()), java.nio.charset.StandardCharsets.US_ASCII).trim();
+                long n = "max".equals(v) ? 0 : Long.parseLong(v);
+                if (n > 0 && n < (1L << 50)) return n;                             // v1 says "no limit" with a huge number
+            } catch (Exception ignored) {
+                // not there - the next one
+            }
+        }
+        return 0;
     }
 
     private static String readCpuModel() {

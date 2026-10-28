@@ -11,6 +11,12 @@ import java.nio.file.StandardCopyOption;
  * tidies up. {@code java -cp WavePanel.jar me.nv08.wavepanel.core.InstallFinisher <new jar> <server jar> <stage dir>}
  */
 public final class InstallFinisher {
+    /**
+     * Its name as plain text: the shutdown hooks that start it run after Paper has closed the plugin's jar, so they
+     * can't load a class from it any more - not even to ask for its name.
+     */
+    static final String NAME = "me.nv08.wavepanel.core.InstallFinisher";
+
     private InstallFinisher() {}
 
     public static void main(String[] a) throws Exception {

@@ -1,23 +1,23 @@
-# WavePanel.jar 3.2 - source code
+# WavePanel.jar 3.3 - source code
 
-The complete source code of **WavePanel.jar 3.2**, the plugin / mod that connects a Minecraft server to
+The complete source code of **WavePanel.jar 3.3**, the plugin / mod that connects a Minecraft server to
 [WavePanel](https://wavepanel.xyz). Nothing is left out: every file inside the jar is built from this folder.
 
 | Official jar | https://wavepanel.xyz/assets/downloads/WavePanel.jar |
 |---|---|
-| Same file on GitHub | [Release v3.2](https://github.com/NV08ISTHEGOAT/WavePanel-Plugin/releases/tag/v3.2) |
-| Size | 136,940 bytes |
-| SHA-256 | `97cc58737ce427da4249cabddb0d736b38a1e24e82a323a72101f1a3e6010467` |
+| Same file on GitHub | [Release v3.3](https://github.com/NV08ISTHEGOAT/WavePanel-Plugin/releases/tag/v3.3) |
+| Size | 174,611 bytes |
+| SHA-256 | `0e2d9588bd98541e134a5bc26b15f723e146ddf0ce0231e9a8007eed0816f6f9` |
 
 ## What's inside the jar
 
-Only WavePanel's own code - 47 class files under `me/nv08/wavepanel/`, not obfuscated - plus the small descriptor
+Only WavePanel's own code - 51 class files under `me/nv08/wavepanel/`, not obfuscated - plus the small descriptor
 file each kind of server looks for (`plugin.yml`, `bungee.yml`, `velocity-plugin.json`, `fabric.mod.json`,
 `META-INF/mods.toml`, `META-INF/neoforge.mods.toml`). No third-party libraries are packed in.
 
 | Folder | What it is |
 |---|---|
-| `core/` | Everything that isn't a game API: config, `/wavepanel connect`, the connection to WavePanel, files / plugins / backups, the version installer. Java 8, no dependencies. |
+| `core/` | Everything that isn't a game API: config, `/wavepanel connect`, the connection to WavePanel, files / plugins / backups, the version installer, Split (Beta) and its host mode. Java 8, no dependencies. |
 | `bukkit/` | Paper, Spigot, Purpur, Folia and their forks |
 | `bungee/` | BungeeCord, Waterfall |
 | `velocity/` | Velocity |
@@ -55,7 +55,11 @@ next to this source.
 - The version installer - only when someone uses the Version tab in WavePanel - downloads a server jar over HTTPS from a
   fixed list of official sites (PaperMC, PurpurMC, FabricMC, Mojang) and checks its checksum before using it
   (`Installer.java`, `HOSTS`).
-- That's all: no telemetry, no analytics, no update check, and it never downloads code for itself.
+- Split (Beta) - only when the server's owner splits it in the Version tab - downloads the same way: Velocity and the new
+  parts' server jars from that list, and for Fabric the FabricProxy-Lite and Fabric API mods from Modrinth
+  (`cdn.modrinth.com`), each checked against its SHA-256 / SHA-512 before it's used (`Split.java`, `HOSTS`).
+- That's all: no telemetry, no analytics, no update check, and it never downloads code for itself (a split's new parts
+  get a copy of this same jar, not a download).
 - It opens no port. Only `local: true` (off by default, for a WavePanel running on the same machine) serves read-only
   stats on 127.0.0.1.
 - Vanilla (`-javaagent`): it pings its own server for the player list and, if RCON is on, sends commands to 127.0.0.1
@@ -65,7 +69,8 @@ next to this source.
 
 **What it sends:** the server software and version, TPS / MSPT, players online and the player list (name, UUID, world,
 position, game mode, ping, health, food, op or not), worlds (players, entities, loaded chunks), the machine's CPU / RAM /
-disk use, core count, CPU model and OS, the server's own memory, CPU and threads, the Java version - and the new console
+disk use, core count, CPU model and OS, the server's own memory, CPU and threads, the memory limit of its container (the
+cgroup limit, so a split can share it out), the Java version - and the new console
 lines, exactly as the console shows them (on most servers that includes the IP address of players joining, just like
 `logs/latest.log`).
 
@@ -75,9 +80,13 @@ lines, exactly as the console shows them (on most servers that includes the IP a
 - with `remote.allow-files: true` (the default): the file manager, the plugins / mods page, backups and the version
   installer. All of it is locked to the server's own folder - every path is checked on its real location, so `../` and
   symlinks can't get out (`JobLink.java`). `allow-files: false` switches all of that off: stats, console and players only.
-- The only program it ever starts: on Windows, after the version installer has run, a small helper
+- The programs it starts: on Windows, after the version installer or a split has run, a small helper
   (`java -cp WavePanel.jar me.nv08.wavepanel.core.InstallFinisher`) that swaps the server jar once the server has
-  stopped - Windows can't replace a jar that is still running.
+  stopped - Windows can't replace a jar that is still running. And only on a server that was split: there the host's
+  start command runs WavePanel.jar itself (`java -jar`, host mode - `Supervisor.java`), which starts the parts (Java,
+  each in its own folder inside the server's folder) and a Velocity proxy on the server's port, passes the console
+  through, and starts a part again when it crashes. Undo split in WavePanel puts the original server jar back.
+  `java -jar WavePanel.jar` on a server that isn't split only prints a hint and exits.
 
 ## License
 

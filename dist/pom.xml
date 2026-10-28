@@ -6,7 +6,7 @@
     <parent>
         <groupId>me.nv08.wavepanel</groupId>
         <artifactId>wavepanel-parent</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
     </parent>
     <!-- The one WavePanel.jar: every module, plus each server kind's own descriptor (plugin.yml, fabric.mod.json...). -->
     <artifactId>wavepanel-dist</artifactId>
@@ -84,6 +84,8 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
+                                        <!-- java -jar WavePanel.jar: a split server's host mode (and a hint otherwise) -->
+                                        <Main-Class>me.nv08.wavepanel.core.Supervisor</Main-Class>
                                         <Premain-Class>me.nv08.wavepanel.agent.Agent</Premain-Class>
                                         <Agent-Class>me.nv08.wavepanel.agent.Agent</Agent-Class>
                                         <Implementation-Title>WavePanel</Implementation-Title>

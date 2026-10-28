@@ -141,6 +141,16 @@ final class JobLink implements Runnable {
                     core.installAndRestart(plan);                    // answered first: the server stops right after
                     return;
                 }
+                case "server.split": {
+                    final Split.Plan plan = new Split(core, root).prepare(a);
+                    reply(jid, true, plan.result, null, 200);
+                    core.swapAndRestart("Splitting this server: " + plan.label, "as a split", plan::apply);
+                    return;
+                }
+                // a split's notes to WavePanel's host mode: from any of its parts
+                case "split.hosts": result = Split.control("hosts.json", Json.write(Json.obj(a.get("hosts")))); break;
+                case "split.start": result = Split.control((Json.b(a, "restart") ? "restart-" : "start-") + Split.slug(Json.s(a, "slug")), ""); break;
+                case "server.unsplit": result = Split.control("unsplit", Json.s(a, "who")); break;
                 default: throw new JobError(400, "Unknown job " + op);
             }
             reply(jid, true, result, null, 200);

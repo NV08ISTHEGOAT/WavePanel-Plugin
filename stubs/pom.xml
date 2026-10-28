@@ -6,7 +6,7 @@
     <parent>
         <groupId>me.nv08.wavepanel</groupId>
         <artifactId>wavepanel-parent</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
     </parent>
     <!-- Fabric's / Forge's / NeoForge's entry-point types, to compile against. Never shipped: the loaders have the real ones. -->
     <artifactId>wavepanel-stubs</artifactId>

@@ -1,6 +1,7 @@
 package me.nv08.wavepanel.agent;
 
 import me.nv08.wavepanel.core.Core;
+import me.nv08.wavepanel.core.Supervisor;
 import me.nv08.wavepanel.mod.Bridge;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public final class Agent {
     public static void agentmain(String args, Instrumentation i) { boot(args, i, false); }
 
     private static synchronized void boot(String args, Instrumentation i, boolean early) {
-        if (inst != null) return;
+        if (inst != null || hostMode()) return;
         inst = i;
         for (String a : (args == null ? "" : args).trim().split("[,;\\s]+")) {
             int eq = a.indexOf('=');
@@ -57,6 +58,23 @@ public final class Agent {
         Thread t = new Thread(Agent::watch, "WavePanel-agent");
         t.setDaemon(true);
         t.start();
+    }
+
+    /**
+     * This JVM is WavePanel's host mode (a split server: the host still passes -javaagent, but the jar it starts is
+     * WavePanel.jar now) - no Minecraft server here; the parts it starts run their own copies.
+     */
+    private static boolean hostMode() {
+        String cmd = System.getProperty("sun.java.command", "").trim();
+        if (cmd.startsWith(Supervisor.class.getName())) return true;
+        int end = cmd.toLowerCase(Locale.ROOT).indexOf(".jar");
+        if (end < 0) return false;
+        try (JarFile jar = new JarFile(cmd.substring(0, end + 4))) {
+            Manifest m = jar.getManifest();
+            return m != null && Supervisor.class.getName().equals(m.getMainAttributes().getValue("Main-Class"));
+        } catch (IOException | RuntimeException e) {
+            return false;
+        }
     }
 
     /** Waits for the server to come up, then runs the best version of WavePanel there is for it. */
